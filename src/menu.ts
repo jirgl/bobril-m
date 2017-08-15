@@ -21,6 +21,9 @@ interface IMenuCtx extends b.IBobrilCtx {
 function decrementKeyboardFocusIndex(ctx: IMenuCtx) {
     let index = ctx.focusIndex;
     let lastValidIndex = ctx.focusIndex;
+    if (!(ctx.data.children instanceof Array))
+        return;
+
     const children = <b.IBobrilChildArray>ctx.data.children;
 
     do {
@@ -61,6 +64,9 @@ function handleKeyDown(ctx: IMenuCtx, event: b.IKeyDownUpEvent) {
 function incrementKeyboardFocusIndex(ctx: IMenuCtx) {
     let index = ctx.focusIndex;
     let lastValidIndex = ctx.focusIndex;
+    if (!(ctx.data.children instanceof Array))
+        return;
+
     const children = <b.IBobrilChildArray>ctx.data.children;
 
     do {
@@ -87,12 +93,7 @@ function setFocusIndex(ctx: IMenuCtx, newIndex: number, isKeyboardFocused: boole
     b.invalidate(ctx);
 }
 
-function setWidthAndFocus(ctx: IMenuCtx, element: HTMLElement) {
-    if (ctx.isKeyboardFocused) {
-        //set focus to correct item
-        b.focus((<any>ctx.me.children![0]).children[0].children[ctx.focusIndex]);
-    }
-
+function setWidth(ctx: IMenuCtx, element: HTMLElement) {
     const elWidth = element.offsetWidth;
     const keyWidth = ctx.keyWidth;
     const minWidth = keyWidth * 1.5;
@@ -118,16 +119,24 @@ export const Menu = b.createComponent<IMenuData>({
     render(ctx: IMenuCtx, me: b.IBobrilNode) {
         const d = ctx.data;
 
+        if (d.children instanceof Array) {
+            (<b.IBobrilChildArray>d.children).forEach((child: any, i: number) => {
+                if (child.component.id === 'menuItem') {
+                    child.data.isKeyboardFocused = ctx.isKeyboardFocused && i === ctx.focusIndex;
+                }
+            });
+        }
+
         me.children = b.styledDiv(List({}, d.children), {
             maxHeight: d.maxHeight,
             overflowY: d.maxHeight ? 'auto' : undefined,
         }, d.style);
     },
     postInitDom(ctx: IMenuCtx, _me: b.IBobrilCacheNode, element: HTMLElement) {
-        setWidthAndFocus(ctx, element);
+        setWidth(ctx, element);
     },
     postUpdateDomEverytime(ctx: IMenuCtx, _me: b.IBobrilCacheNode, element: HTMLElement) {
-        setWidthAndFocus(ctx, element);
+        setWidth(ctx, element);
     },
     onPointerUp(ctx: IMenuCtx, _ev: b.IBobrilPointerEvent): boolean {
         ctx.isKeyboardFocused = false;

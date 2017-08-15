@@ -196,7 +196,7 @@ function getMenuPreview(): b.IBobrilChildren {
         m.Paper({ style: { margin: 16 } }, [
             m.Menu({}, [
                 m.MenuItem({ primaryText: 'Maps', leftIcon: icons.mapsDirections() }),
-                m.MenuItem({ primaryText: 'Bookmarks', disabled: true, leftIcon: icons.actionBookmark() }),
+                m.MenuItem({ primaryText: 'Bookmarks', leftIcon: icons.actionBookmark() }),
                 m.Divider(),
                 m.MenuItem({ primaryText: 'Flights', rightIcon: icons.mapsFlight() }),
                 m.MenuItem({ primaryText: 'Apps', rightIcon: icons.actionAlarm() })
@@ -237,15 +237,6 @@ function getMenuPreview(): b.IBobrilChildren {
                 m.MenuItem({
                     primaryText: 'Whatever'
                 })
-            ])
-        ]),
-        m.Paper({ style: { margin: 16 } }, [
-            m.Menu({ desktop: true }, [
-                m.MenuItem({ primaryText: 'Maps', leftIcon: icons.mapsDirections(), desktop: true }),
-                m.MenuItem({ primaryText: 'Bookmarks', disabled: true, leftIcon: icons.actionBookmark() }),
-                m.Divider(),
-                m.MenuItem({ primaryText: 'Flights', rightIcon: icons.mapsFlight() }),
-                m.MenuItem({ primaryText: 'Apps', rightIcon: icons.actionAlarm() })
             ])
         ]),
         m.Paper({ style: { margin: 16 } }, [

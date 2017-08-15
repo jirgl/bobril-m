@@ -15,22 +15,23 @@ export const enum IFocusState {
 }
 
 export interface IMenuItemData {
-    anchorOrigin?: IPopoverOrigin,
-    animation?: b.IComponentFactory<IPopoverAnimationDefaultData>,
-    checked?: boolean,
-    children?: b.IBobrilChildren,
-    desktop?: boolean,
-    disabled?: boolean,
-    innerDivStyle?: b.IBobrilStyleDef,
-    insetChildren?: boolean,
-    leftIcon?: b.IBobrilNode,
-    menuItems?: b.IBobrilChildren,
-    action?: () => void,
-    primaryText?: string,
-    rightIcon?: b.IBobrilNode,
-    secondaryText?: string,
-    style?: b.IBobrilStyleDef,
-    targetOrigin?: IPopoverOrigin
+    anchorOrigin?: IPopoverOrigin;
+    animation?: b.IComponentFactory<IPopoverAnimationDefaultData>;
+    checked?: boolean;
+    children?: b.IBobrilChildren;
+    desktop?: boolean;
+    disabled?: boolean;
+    innerDivStyle?: b.IBobrilStyleDef;
+    insetChildren?: boolean;
+    isKeyboardFocused?: boolean;
+    leftIcon?: b.IBobrilNode;
+    menuItems?: b.IBobrilChildren;
+    action?: () => void;
+    primaryText?: string;
+    rightIcon?: b.IBobrilNode;
+    secondaryText?: string;
+    style?: b.IBobrilStyleDef;
+    targetOrigin?: IPopoverOrigin;
 }
 
 interface IMenuItemCtx extends b.IBobrilCtx {
@@ -65,6 +66,7 @@ function handleRequestClose(ctx: IMenuItemCtx) {
 };
 
 export const MenuItem = b.createComponent<IMenuItemData>({
+    id: 'menuItem',
     init(ctx: IMenuItemCtx) {
         ctx.open = false;
     },
@@ -124,6 +126,7 @@ export const MenuItem = b.createComponent<IMenuItemData>({
             insetChildren: d.insetChildren,
             leftIcon: leftIconElement,
             rightIcon: rightIconElement,
+            selected: d.isKeyboardFocused,
             style: [rootStyle, {
                 color: d.disabled ? styles.strDisabledColor : styles.strTextColor,
                 cursor: d.disabled ? 'default' : 'pointer',
