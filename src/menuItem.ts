@@ -23,7 +23,6 @@ export interface IMenuItemData {
     disabled?: boolean;
     innerDivStyle?: b.IBobrilStyleDef;
     insetChildren?: boolean;
-    isKeyboardFocused?: boolean;
     leftIcon?: b.IBobrilNode;
     menuItems?: b.IBobrilChildren;
     action?: () => void;
@@ -37,6 +36,7 @@ export interface IMenuItemData {
 interface IMenuItemCtx extends b.IBobrilCtx {
     data: IMenuItemData;
     open: boolean;
+    hasFocus: boolean;
 }
 
 // have to be object instead of styleDef because of style overrides
@@ -126,7 +126,7 @@ export const MenuItem = b.createComponent<IMenuItemData>({
             insetChildren: d.insetChildren,
             leftIcon: leftIconElement,
             rightIcon: rightIconElement,
-            selected: d.isKeyboardFocused,
+            selected: ctx.hasFocus,
             style: [rootStyle, {
                 color: d.disabled ? styles.strDisabledColor : styles.strTextColor,
                 cursor: d.disabled ? 'default' : 'pointer',
@@ -135,5 +135,15 @@ export const MenuItem = b.createComponent<IMenuItemData>({
                 fontSize: d.desktop ? 15 : 16
             }, d.style]
         }, [d.children, secondaryTextElement, childMenuPopover]);
+    },
+    postRender(ctx: IMenuItemCtx, _me: b.IBobrilNode, oldMe: b.IBobrilCacheNode) {
+        const focusedNode = (ctx.me.parent as any).parent.parent.ctx.focusNode;
+        if (oldMe && focusedNode === oldMe && !ctx.hasFocus) {
+            ctx.hasFocus = true;
+            b.invalidate(ctx);
+            return;
+        }
+
+        ctx.hasFocus = false;
     }
 });

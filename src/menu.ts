@@ -14,6 +14,7 @@ export interface IMenuData {
 interface IMenuCtx extends b.IBobrilCtx {
     data: IMenuData;
     focusIndex: number;
+    focusNode: b.IBobrilNode;
     isKeyboardFocused: boolean;
     keyWidth: number;
 }
@@ -21,10 +22,10 @@ interface IMenuCtx extends b.IBobrilCtx {
 function decrementKeyboardFocusIndex(ctx: IMenuCtx) {
     let index = ctx.focusIndex;
     let lastValidIndex = ctx.focusIndex;
-    if (!(ctx.data.children instanceof Array))
+    if (!(ctx.me.children instanceof Array))
         return;
 
-    const children = <b.IBobrilChildArray>ctx.data.children;
+    const children = <b.IBobrilChildArray>(<any>ctx.me.children[0]).children[0].children;
 
     do {
         index--;
@@ -37,7 +38,7 @@ function decrementKeyboardFocusIndex(ctx: IMenuCtx) {
 
     } while (index !== 0)
 
-    setFocusIndex(ctx, lastValidIndex, true);
+    setFocusIndex(ctx, lastValidIndex, <b.IBobrilNode>children[lastValidIndex]);
 }
 
 function handleKeyDown(ctx: IMenuCtx, event: b.IKeyDownUpEvent) {
@@ -64,10 +65,10 @@ function handleKeyDown(ctx: IMenuCtx, event: b.IKeyDownUpEvent) {
 function incrementKeyboardFocusIndex(ctx: IMenuCtx) {
     let index = ctx.focusIndex;
     let lastValidIndex = ctx.focusIndex;
-    if (!(ctx.data.children instanceof Array))
+    if (!(ctx.me.children instanceof Array))
         return;
 
-    const children = <b.IBobrilChildArray>ctx.data.children;
+    const children = <b.IBobrilChildArray>(<any>ctx.me.children[0]).children[0].children;
 
     do {
         index++;
@@ -80,16 +81,17 @@ function incrementKeyboardFocusIndex(ctx: IMenuCtx) {
 
     } while (index !== children.length - 1)
 
-    setFocusIndex(ctx, lastValidIndex, true);
+    setFocusIndex(ctx, lastValidIndex, <b.IBobrilNode>children[lastValidIndex]);
 }
 
 function isValidChild(child: b.IBobrilNode): boolean {
     return (child.component == null || child.component.id !== 'Divider') && (child.data && !child.data.disabled);
 }
 
-function setFocusIndex(ctx: IMenuCtx, newIndex: number, isKeyboardFocused: boolean) {
+function setFocusIndex(ctx: IMenuCtx, newIndex: number, newNode: b.IBobrilNode) {
+    ctx.focusNode = newNode;
     ctx.focusIndex = newIndex;
-    ctx.isKeyboardFocused = isKeyboardFocused;
+    ctx.isKeyboardFocused = true;
     b.invalidate(ctx);
 }
 
@@ -118,14 +120,6 @@ export const Menu = b.createComponent<IMenuData>({
     },
     render(ctx: IMenuCtx, me: b.IBobrilNode) {
         const d = ctx.data;
-
-        if (d.children instanceof Array) {
-            (<b.IBobrilChildArray>d.children).forEach((child: any, i: number) => {
-                if (child.component.id === 'menuItem') {
-                    child.data.isKeyboardFocused = ctx.isKeyboardFocused && i === ctx.focusIndex;
-                }
-            });
-        }
 
         me.children = b.styledDiv(List({}, d.children), {
             maxHeight: d.maxHeight,
